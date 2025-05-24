@@ -6,6 +6,10 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
+    env:
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /tmp/testing.sqlite
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
