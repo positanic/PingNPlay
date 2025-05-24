@@ -20,6 +20,16 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction
 
+      # Install Node.js dependencies
+      - name: Install Node.js dependencies
+        run: npm install
+        working-directory: ./ # Adjust if frontend lives in a subdirectory
+
+      # Build frontend assets
+      - name: Build assets
+        run: npm run build
+        working-directory: ./ # Adjust if frontend lives in a subdirectory
+
       - name: Copy environment file
         run: cp .env.example .env
 
