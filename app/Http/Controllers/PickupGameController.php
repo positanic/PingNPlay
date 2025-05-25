@@ -67,4 +67,65 @@ class PickupGameController extends Controller
         // Pass the games to the calendar view (assumed to be 'calendar')
         return View::make('calendar', compact('games'));
     }
+
+    /**
+     * Display a single pickup game and its signups.
+     *
+     * @param int $id
+     * @return \Illuminate\View\View
+     */
+    public function show($id)
+    {
+        $game = PickupGame::with(['signups.user'])->findOrFail($id);
+        $signups = $game->signups;
+        return view('game', compact('game', 'signups'));
+    }
+
+    /**
+     * Sign up the authenticated user for a pickup game.
+     */
+    public function signup(Request $request, $id)
+    {
+        $request->validate([
+            'comment' => 'nullable|string|max:255',
+        ]);
+        $game = PickupGame::findOrFail($id);
+        $signup = $game->signups()->firstOrCreate(
+            ['user_id' => $request->user()->id],
+            ['comment' => $request->comment]
+        );
+        if ($signup->wasRecentlyCreated === false) {
+            $signup->comment = $request->comment;
+            $signup->save();
+        }
+        return redirect()->route('game', $id)->with('success', 'Signed up successfully!');
+    }
+
+    /**
+     * Update the signup note for the authenticated user.
+     */
+    public function updateSignup(Request $request, $id)
+    {
+        $request->validate([
+            'comment' => 'nullable|string|max:255',
+        ]);
+        $game = PickupGame::findOrFail($id);
+        $signup = $game->signups()->where('user_id', $request->user()->id)->firstOrFail();
+        $signup->comment = $request->comment;
+        $signup->save();
+        return redirect()->route('game', $id)->with('success', 'Signup note updated!');
+    }
+
+    /**
+     * Cancel the signup for the authenticated user.
+     */
+    public function cancelSignup(Request $request, $id)
+    {
+        $game = PickupGame::findOrFail($id);
+        $signup = $game->signups()->where('user_id', $request->user()->id)->first();
+        if ($signup) {
+            $signup->delete();
+        }
+        return redirect()->route('game', $id)->with('success', 'Signup cancelled.');
+    }
 }

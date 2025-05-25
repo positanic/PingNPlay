@@ -68,18 +68,12 @@
         <div class="row">
             <div class="col-xl-6 col-md-9 col-12 ms-auto me-auto">
                 <div class="list-group w-100 fs-5">
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="bi-cloud-sun-fill me-2"></i>Monday, May 15
-                        <span class="badge rounded-pill bg-primary float-end">19</span>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="bi-sun-fill me-2"></i>Wednesday, May 17
-                        <span class="badge rounded-pill bg-primary float-end">15</span>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        Friday, May 19
-                        <span class="badge rounded-pill bg-primary float-end">3</span>
-                    </a>
+                    @foreach($games as $game)
+                        <a href="{{ route('game', $game->id) }}" class="list-group-item list-group-item-action">
+                            <i class="bi-calendar-event me-2"></i>{{ \Carbon\Carbon::parse($game->game_date)->format('l, F j') }}
+                            <span class="badge rounded-pill bg-primary float-end">{{ $game->signups->count() }}</span>
+                        </a>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -303,10 +297,10 @@
                 html += `<div class="calendar-day${gamesForDay.length ? ' has-events' : ''}">`;
                 html += `<div class="date-number">${i}</div>`;
                 gamesForDay.forEach(game => {
-                    html += `<div class="event-badge bg-primary">
+                    html += `<a href="/game/${game.id}" class="list-group-item list-group-item-action"><div class="event-badge bg-primary">
                         ${game.start_time ? game.start_time.substring(11,16) : ''}
                         ${game.location ? `<br><small>${game.location}</small>` : ''}
-                    </div>`;
+                    </div></a>`;
                 });
                 html += `</div>`;
             }

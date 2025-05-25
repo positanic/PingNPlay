@@ -23,6 +23,10 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('pickup_game_id')->references('id')->on('pickup_games')->onDelete('cascade');
         });
+
+        Schema::table('pickup_game_signups', function (Blueprint $table) {
+            $table->timestamp('updated_at')->nullable();
+        });
     }
 
     /**
